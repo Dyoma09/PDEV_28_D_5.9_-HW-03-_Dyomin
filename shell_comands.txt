@@ -1,0 +1,134 @@
+In [1]: from news.models import *
+
+In [2]: user_1 = User.objects.create_user(username = 'Username_1')
+
+In [3]: user_2 = User.objects.create_user(username = 'Username_2')
+
+In [4]: author_1 = Author.objects.create(user = user_1)
+
+In [5]: author_2 = Author.objects.create(user = user_2)
+
+In [6]: category_1 = Category.objects.create(category_name = 'категория_1')
+
+In [7]: category_2 = Category.objects.create(category_name = 'категория_2')
+
+In [8]: category_3 = Category.objects.create(category_name = 'категория_3')
+
+In [9]: category_4 = Category.objects.create(category_name = 'категория_4')
+
+In [10]: post_1 = Post.objects.create(author=author_2, post_type="AT", post_title="TITLE_1", post_text="TEXT_1")
+
+In [11]: post_2 = Post.objects.create(author=author_1, post_type="AT", post_title="TITLE_2", post_text="TEXT_2")
+    ...: 
+
+In [12]: post_3 = Post.objects.create(author=author_1, post_type="NW", post_title="TITLE_3", post_text="TEXT_3")
+
+In [13]: post_1.categories.add(category_1, category_3)
+
+In [14]: post_1.save()
+
+In [15]: post_2.categories.add(category_2, category_4)
+    ...: 
+
+In [16]: post_2.save
+Out[16]: <bound method Model.save of <Post: Post object (2)>>
+
+In [17]: post_2.save()
+
+In [18]: post_3.categories.add(category_2, category_3)
+
+In [19]: post_3.save()
+    ...: 
+
+In [20]: comm_1 = Comment.objects.create(post=post_1, user=user_1, comment_text="content_1")
+
+In [21]: comm_2 = Comment.objects.create(post=post_3, user=user_1, comment_text="content_2")
+
+In [22]: comm_3 = Comment.objects.create(post=post_2, user=user_2, comment_text="content_3")
+    ...: 
+
+In [23]: comm_4 = Comment.objects.create(post=post_2, user=user_1, comment_text="content_4")
+
+In [24]:  post_1.like()
+
+In [25]:  post_1.rating
+Out[25]: 1
+
+In [26]:  post_1.like()
+
+In [27]: post_2.dislike()
+
+In [28]: post_2.like()
+
+In [29]: post_3.dislike()
+
+In [30]: comm_3.like()
+
+In [31]: comm_3.rating
+Out[31]: 1
+
+In [32]: comm_3.like()
+
+In [33]: comm_3.rating
+Out[33]: 2
+
+In [34]: comm_3.dislike()
+
+In [35]: comm_4.like()
+
+In [36]: comm_4.like()
+
+In [37]: comm_2.dislike()
+
+In [38]: comm_2.dislike()
+
+In [39]: comm_1.dislike()
+
+In [40]: comm_1.like()
+
+In [41]: author_2.update_rating()
+
+In [42]: author_2.rating
+Out[42]: 7
+
+In [43]: author_1.update_rating()
+
+In [44]: author_1.rating
+Out[44]: -2
+
+In [45]: best_user = Author.objects.order_by("-rating").values("user__username", "rating").first()
+
+In [46]: best_user
+Out[46]: {'user__username': 'Username_2', 'rating': 7}
+
+In [47]: best_post = Post.objects.order_by("-rating").values("time_create", "author__user__username", "rating", "title").first()
+---------------------------------------------------------------------------
+FieldError                                Traceback (most recent call last)
+    
+
+In [48]: best_post = Post.objects.order_by("-rating").values("create_time", "author__user__username", "rating", "post_title").first()
+
+In [49]: best_post
+Out[49]: 
+{'create_time': datetime.datetime(2023, 7, 16, 10, 21, 49, 406117, tzinfo=datetime.timezone.utc),
+ 'author__user__username': 'Username_2',
+ 'rating': 2,
+ 'post_title': 'TITLE_1'}
+
+In [50]: best_post_for_preview = Post.objects.order_by("-rating").first()
+
+In [51]: best_post_for_preview.preview()
+Out[51]: 'TEXT_1'
+
+In [52]: comments = Comment.object.filter(post=best_post_for_preview)
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+Cell In[52], line 1
+----> 1 comments = Comment.object.filter(post=best_post_for_preview)
+
+AttributeError: type object 'Comment' has no attribute 'object'
+
+In [53]: comments = Comment.objects.filter(post=best_post_for_preview)
+
+In [54]: comments
+Out[54]: <QuerySet [<Comment: Comment object (1)>]>
